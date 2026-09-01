@@ -36,7 +36,7 @@
 \begin{abstract}
 本文档系统记录 2026 赛季基于东北大学 T-DT 实验室 2025 赛季开源雷达代码，改造为
 Aurora 战队 RoboMaster RMUC 2026 参赛系统的完整过程，内容包括：上游开源代码的
-功能与不足、各模块的改造内容与改造原因、赛场应用效果，以及遗留问题与 2027 赛季
+功能与不足、各模块的改造内容、赛场应用效果，以及遗留问题与 2027 赛季
 改进建议，供后续接手雷达站的同学参考。
 \end{abstract}
 
@@ -53,8 +53,8 @@ MIT 协议，技术报告见 \url{https://bbs.robomaster.com/article/803954}）�
 相机图像采集与推理模型三部分缺失，而这三部分是实际参赛不可缺少的环节。
 
 原版硬件平台为 Livox Avia 激光雷达、海康 CH-120-10UC 相机、i7-12700KF 处理器与
-RTX A4000$\times$2 显卡。本战队硬件为 Livox Mid-70、海康 6MP 相机、i7 处理器与
-RTX 3050M 显卡，算力明显低于原版平台，这一差异直接决定了后续推理方案的设计思路。
+RTX A4000$\times$2 显卡。本战队硬件为 Livox Mid-70 激光雷达、海康 6MP 相机，
+整机为惠普暗影精灵 10 笔记本电脑（RTX 4060 显卡），并专门购置 1TB 固态硬盘用于雷达站数据存储。
 
 \subsection{原版代码结构}
 \begin{itemize}
@@ -77,25 +77,25 @@ resolve.cpp 仅 141 行、localization.cpp 仅 187 行。
 
 \begin{table}[H]
 \centering\small
-\begin{tabularx}{\textwidth}{lrrXX}
+\begin{tabularx}{\textwidth}{lrrX}
 \toprule
-文件 & T-DT 原版 & 本项目 & 主要改动 & 改动原因 \\
+文件 & T-DT 原版 & 本项目 & 主要改动 \\
 \midrule
-detect.cpp & 334 & \textbf{999} & 增加 SR 超分、3D 框、5 槽位输出、机器人号映射 & 算力受限，需超分提升精度；按规则要求输出指定槽位 \\
-kalman\_filter.cpp & 206 & \textbf{1488} & 增加 Hungarian 匹配、id\_score 身份置信、行为预测 & 原版跟踪逻辑较简单，比赛需要持续锁定目标并支持盲区预测 \\
-debug\_map.cpp & 285 & \textbf{728} & 增加盲区预测点、双倍易伤自动触发 & 原版仅作显示，比赛需要自动触发双倍易伤 \\
-resolve.cpp & 141 & \textbf{329} & 增加 HeightGrid 地形高度修正 & 场地存在坡道与高台，平面透视变换精度不足 \\
-localization.cpp & 187 & \textbf{483} & CPU GICP 改为 CUDA ICP & CPU 配准速度不足，改用 GPU 加速 \\
-cluster.cpp & 84 & \textbf{250} & 扩充聚类与目标过滤逻辑 & 适配 2026 赛季车型 \\
-calibrate.cpp & 190 & \textbf{451} & 标定流程按 2026 场地重写 & 适配新赛季场地与分色标定 \\
+detect.cpp & 334 & \textbf{999} & 增加 SR 超分、3D 框、5 槽位输出、机器人号映射 \\
+kalman\_filter.cpp & 206 & \textbf{1488} & 增加 Hungarian 匹配、id\_score 身份置信、行为预测 \\
+debug\_map.cpp & 285 & \textbf{728} & 增加盲区预测点、双倍易伤自动触发 \\
+resolve.cpp & 141 & \textbf{329} & 增加 HeightGrid 地形高度修正 \\
+localization.cpp & 187 & \textbf{483} & CPU GICP 改为 CUDA ICP \\
+cluster.cpp & 84 & \textbf{250} & 扩充聚类与目标过滤逻辑 \\
+calibrate.cpp & 190 & \textbf{451} & 标定流程按 2026 场地重写 \\
 \midrule
-\multicolumn{5}{l}{\textbf{完全新增的模块：}} \\
+\multicolumn{4}{l}{\textbf{完全新增的模块：}} \\
 \midrule
-radar\_serial\_node.cpp & --- & 新增 & 裁判系统串口通信（0x0305/0x0301/0x0303） & \textbf{原版缺失，参赛必需} \\
-camera/（hik.cpp） & --- & 新增 & 海康 SDK 相机驱动 & \textbf{原版缺失，需自行开发} \\
-rm\_control\_panel & --- & 新增 & Qt 控制面板（切换队伍、标定、录包） & 原版调整配置需修改文件并重启 \\
-databag\_tool & --- & 新增 & 录包工具 & 原版无专用录包工具 \\
-create\_sr\_onnx.py 等 & --- & 新增 & SR 超分模型训练与转换脚本 & 原版无超分方案 \\
+radar\_serial\_node.cpp & --- & 新增 & 裁判系统串口通信（0x0305/0x0301/0x0303） \\
+camera/（hik.cpp） & --- & 新增 & 海康 SDK 相机驱动 \\
+rm\_control\_panel & --- & 新增 & Qt 控制面板（切换队伍、标定、录包） \\
+databag\_tool & --- & 新增 & 录包工具 \\
+create\_sr\_onnx.py 等 & --- & 新增 & SR 超分模型训练与转换脚本 \\
 \bottomrule
 \end{tabularx}
 \caption{从 T-DT 开源到参赛系统的核心文件改动统计。}
@@ -111,18 +111,15 @@ create\_sr\_onnx.py 等 & --- & 新增 & SR 超分模型训练与转换脚本 & 
 夜间场次曝光参数单独保存于 \code{config/camera\_driver\_night.yaml}。
 
 \subsection{检测模块 detect：超分、3D 框与 5 槽位输出}
-原版 334 行，仅实现 YOLO 检测与装甲板分类。由于本战队 RTX 3050M 算力明显低于
-原版 A4000$\times$2，直接使用 1280 输入推理速度不足，因此采取以下措施：
+原版 334 行，仅实现 YOLO 检测与装甲板分类。本项目主要改动：
 \begin{enumerate}
-  \item \textbf{增加 SR 超分}：先以较低分辨率完成快速检测，再对感兴趣区域做超分辨率放大，
-        在算力受限的 GPU 上提高小目标识别率。训练与转换脚本为
-        \code{utils/create\_sr\_onnx.py} 与 \code{utils/pb2onnx\_sr.py}。
-  \item \textbf{增加 3D 框}：利用外参将检测框投影回三维空间，在检测窗口中叠加蓝色长方体，
-        用于直观检验标定精度（原版仅输出 2D 检测框）。
+  \item \textbf{增加 SR 超分}：先以较低分辨率完成快速检测，再对感兴趣区域做超分辨率放大。
+        训练与转换脚本为 \code{utils/create\_sr\_onnx.py} 与 \code{utils/pb2onnx\_sr.py}。
+  \item \textbf{增加 3D 框}：利用外参将检测框投影回三维空间，在检测窗口中叠加蓝色长方体。
   \item \textbf{增加 5 槽位输出}：按 2026 赛季规则，将装甲板数字映射至槽位
         （1 英雄、2 工程、3 步兵三号、4 步兵四号、6 哨兵；2026 赛季无步兵五号与空中单位），
         写入 \code{DetectResult} 的 \code{red\_x/blue\_x} 数组。
-        该部分存在一项重要缺陷，详见 \S4.2（同号覆盖）。
+        该部分存在一项缺陷，详见 \S4.2（同号覆盖）。
 \end{enumerate}
 
 \subsection{融合模块 kalman\_filter：身份锁定与盲区预测}
@@ -146,18 +143,16 @@ create\_sr\_onnx.py 等 & --- & 新增 & SR 超分模型训练与转换脚本 & 
 \textbf{重要经验：雷达每场比赛后如被搬动，外参即失效，局间必须重新标定}。
 
 \subsection{解算模块 resolve：增加 HeightGrid 地形修正}
-原版 141 行，仅做平面透视变换。RMUC 场地并非平面（存在 43 度坡与高低台），
-直接投影会产生偏差。本项目增加 HeightGrid：预先计算 \code{config/map/field\_mesh.bin}
-网格高度，像素投影至世界坐标时查询实际地面高度加以修正，扩展至 329 行。
+原版 141 行，仅做平面透视变换。本项目增加 HeightGrid：预先计算
+\code{config/map/field\_mesh.bin} 网格高度，像素投影至世界坐标时查询实际地面高度
+加以修正，扩展至 329 行。
 
 \subsection{配准模块 localization：CPU GICP 改为 CUDA ICP}
-原版 187 行使用 CPU GICP 配准，本项目改为 CUDA ICP（\code{cuda\_icp.h}），
-共 483 行。原因仍是算力：CPU 配准在前数帧收敛较慢，无法满足赛场时间要求；
-改为 GPU 实现后，前几帧即可完成对齐。场地地图 \code{config/map/map.pcd}
-同步更换为 2026 赛季场地扫描点云。
+原版 187 行使用 CPU GICP 配准，本项目改为 CUDA ICP（\code{cuda\_icp.h}），共 483 行。
+场地地图 \code{config/map/map.pcd} 同步更换为 2026 赛季场地扫描点云。
 
 \subsection{串口通信：自主开发（参赛核心环节）}
-\textbf{该模块为原版所没有的内容，是参赛的关键环节，也是 2026 赛季问题最集中的部分}。
+该模块为原版所没有的内容，也是 2026 赛季问题最集中的部分。
 自主编写的 \code{radar\_serial\_node.cpp} 实现以下功能：
 \begin{itemize}
   \item 0x0305 小地图上传：敌方与己方各 6 个坐标（48 字节），频率不超过 5Hz，
