@@ -1,0 +1,60 @@
+数据集: 40000 对 LR/HR 图像
+训练设备: cuda
+Epoch  10/200  train=0.0183  val=0.0194
+Epoch  20/200  train=0.0175  val=0.0178
+Epoch  30/200  train=0.0172  val=0.0174
+Epoch  40/200  train=0.0169  val=0.0169
+Epoch  50/200  train=0.0166  val=0.0166
+Epoch  60/200  train=0.0164  val=0.0166
+Epoch  70/200  train=0.0162  val=0.0162
+Epoch  80/200  train=0.0161  val=0.0163
+Epoch  90/200  train=0.0160  val=0.0162
+Epoch 100/200  train=0.0158  val=0.0160
+Epoch 110/200  train=0.0158  val=0.0159
+Epoch 120/200  train=0.0157  val=0.0158
+Epoch 130/200  train=0.0156  val=0.0158
+Epoch 140/200  train=0.0155  val=0.0157
+Epoch 150/200  train=0.0155  val=0.0157
+Epoch 160/200  train=0.0155  val=0.0157
+Epoch 170/200  train=0.0154  val=0.0156
+Epoch 180/200  train=0.0154  val=0.0156
+Epoch 190/200  train=0.0154  val=0.0155
+/home/zst/T/tools/train_armor_sr.py:206: UserWarning: # 'dynamic_axes' is not recommended when dynamo=True, and may lead to 'torch._dynamo.exc.UserError: Constraints violated.' Supply the 'dynamic_shapes' argument instead if export is unsuccessful.
+  torch.onnx.export(
+W0509 18:35:19.204000 456840 torch/onnx/_internal/exporter/_compat.py:133] Setting ONNX exporter to use operator set version 18 because the requested opset_version 11 is a lower version than we have implementations for. Automatic version conversion will be performed, which may not be successful at converting to the requested version. If version conversion is unsuccessful, the opset version of the exported model will be kept at 18. Please consider setting opset_version >=18 to leverage latest ONNX features
+/usr/lib/python3.12/copyreg.py:99: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+The model version conversion is not supported by the onnxscript version converter and fallback is enabled. The model will be converted using the onnx C API (target version: 11).
+Failed to convert the model to the target version 11 using the ONNX C API. The model was not modified
+Traceback (most recent call last):
+  File "/home/zst/Tracking/.venv/lib/python3.12/site-packages/onnxscript/version_converter/__init__.py", line 137, in call
+    converted_proto = _c_api_utils.call_onnx_api(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/zst/Tracking/.venv/lib/python3.12/site-packages/onnxscript/version_converter/_c_api_utils.py", line 65, in call_onnx_api
+    result = func(proto)
+             ^^^^^^^^^^^
+  File "/home/zst/Tracking/.venv/lib/python3.12/site-packages/onnxscript/version_converter/__init__.py", line 132, in _partial_convert_version
+    return onnx.version_converter.convert_version(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/zst/Tracking/.venv/lib/python3.12/site-packages/onnx/version_converter.py", line 39, in convert_version
+    converted_model_str = C.convert_version(model_str, target_version)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: /github/workspace/onnx/version_converter/BaseConverter.h:67: adapter_lookup: Assertion `false` failed: No Adapter From Version $15 for Shape
+Epoch 200/200  train=0.0154  val=0.0155
+[torch.onnx] Obtain model graph for `ESPCNWrapper([...]` with `torch.export.export(..., strict=False)`...
+[torch.onnx] Obtain model graph for `ESPCNWrapper([...]` with `torch.export.export(..., strict=False)`... ✅
+[torch.onnx] Run decompositions...
+[torch.onnx] Run decompositions... ✅
+[torch.onnx] Translate the graph into ONNX...
+[torch.onnx] Translate the graph into ONNX... ✅
+[torch.onnx] Optimize the ONNX graph...
+[torch.onnx] Optimize the ONNX graph... ✅
+
+[train_armor_sr] ONNX 保存 → /home/zst/T/model/SR/armor_espcn_x4.onnx
+下一步: 转 TRT engine:
+  python3 src/utils/onnx2trt.py \
+    --onnx /home/zst/T/model/SR/armor_espcn_x4.onnx \
+    --saveEngine /home/zst/T/model/SR/armor_espcn_x4.engine \
+    --minShapes input:1x32x32x1 --optShapes input:1x64x64x1 --maxShapes input:1x128x128x1
+然后在 detect_params.yaml 中设置:
+  sr_engine: "/home/zst/T/model/SR/armor_espcn_x4.engine"

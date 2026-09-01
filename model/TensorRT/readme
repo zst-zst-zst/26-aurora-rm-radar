@@ -1,0 +1,19 @@
+存放 TensorRT 的 .engine 文件，路径在 config/detect_params.yaml 中。
+
+当前默认文件：
+- model/TensorRT/yolo.engine
+- model/TensorRT/armor_yolo.engine
+- model/TensorRT/classify.engine
+
+若 .engine 不存在或大小为 0，可在项目根目录执行：
+
+python3 src/utils/onnx2trt.py --onnx=model/ONNX/RM2026.onnx --saveEngine=model/TensorRT/yolo.engine --minBatch 1 --optBatch 1 --maxBatch 2 --Shape=1280x1280 --input_name=images
+
+python3 src/utils/onnx2trt.py --onnx=model/ONNX/armor_yolo.onnx --saveEngine=model/TensorRT/armor_yolo.engine --minBatch 1 --optBatch 5 --maxBatch 12 --Shape=192x192 --input_name=images
+
+python3 src/utils/onnx2trt.py --onnx=model/ONNX/classify.onnx --saveEngine=model/TensorRT/classify.engine --minBatch 1 --optBatch 10 --maxBatch 20 --Shape=224x224 --input_name=input
+
+生成后检查：
+ls -lh model/TensorRT/*.engine
+
+注意：若文件大小为 0B，说明生成失败，需先查看 trtexec 输出报错后再启动 ros2。

@@ -3,37 +3,26 @@ log/
 install/
 .cache/
 .vscode/
-.2.
-.0.0
-.2.
-.0.0）
-.2.
-.0.0
+.venv/
+ALLUSERSPROFILE/
 GenICam/
 
-config/merged_bag/*
-
-*.engine
-
 ros2bags/
+
+# rosbag data (tens of GB)
+*.db3
+*.mcap
+bags/
+config/merged_bag/*
 
 # local large assets (do not push to GitHub)
 *.step
 *.stl
-*.db3
-*.mcap
-bags/
-.venv/
-ALLUSERSPROFILE/
 
-# Heavy ML / map assets (kept locally only)
-model/
-*.onnx
-*.engine
-*.pcd
-*.pkl
-*.npz
+# files over GitHub's 100 MB hard limit
+config/map/RMUC2026_ground_only_1cm.pcd
+config/outputs/ground_surface_dense.pkl
+config/outputs/ground_surface_dense.npz
 
 # Local-only docs / backups
 README.md.bak
-官方文件/
