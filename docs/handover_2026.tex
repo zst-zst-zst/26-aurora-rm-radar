@@ -89,6 +89,13 @@ calibrate.cpp & 190 & \textbf{451} & 标定流程按 2026 场地重写 \\
 2026 赛季无步兵五号与空中单位），写入 \code{DetectResult} 的 \code{red\_x/blue\_x} 数组。
 槽位填写存在同号覆盖缺陷，见 \S4.2。
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.82\textwidth]{figs/detection_zones.png}
+  \caption{RMUC 2026 检测与判定区域划分（俯视 XY 平面）：英雄检测区、飞镖区、
+  飞坡警戒/安全区与中央高台禁发区等。}
+\end{figure}
+
 \subsection{融合 kalman\_filter}
 增加 Hungarian 匹配（KF 轨迹与新检测结果做二分图最优匹配）、id\_score 身份置信
 （仅装甲板数字识别稳定时赋值）、行为分类预测（目标进入盲区后按 CHARGING/TUNNEL/OUTPOST/
@@ -99,10 +106,29 @@ ASSEMBLY 四类预测位置，重新可见后接管）；融合结果经 \code{/
 外参分色保存为 \code{config/\{red,blue\}/out\_matrix\_*}，检测窗口 3D 框用于验证贴合程度。
 雷达被搬动后外参即失效，局间必须重新标定。
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{figs/calib_points.png}
+  \caption{地图区域划分与红蓝双方五点标定路径（我方堡垒 $\to$ 我方前哨 $\to$
+  敌方基地 $\to$ 敌方前哨 $\to$ 中央高塔）。}
+\end{figure}
+
 \subsection{解算 resolve 与配准 localization}
 resolve 增加 HeightGrid 地形修正：预计算 \code{config/map/field\_mesh.bin} 网格高度，
 像素投影至世界坐标时查询实际地面高度修正。localization 由 CPU GICP 改为 CUDA ICP
 （\code{cuda\_icp.h}），地图更换为 2026 赛季场地扫描点云 \code{config/map/map.pcd}。
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.72\textwidth]{figs/ground_height.png}
+  \caption{场地扫描点云的地面高度分布（HeightGrid 网格高度的数据来源）。}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.62\textwidth]{figs/field_topview.png}
+  \caption{RMUC 2026 场地俯视轮廓，用作配准与定位的场地地图。}
+\end{figure}
 
 \subsection{串口通信 radar\_serial\_node}
 自主开发。发送：0x0305 小地图上传（敌我各 6 个坐标，48 字节，不超过 5Hz，坐标置 0 表示未发送；
@@ -116,6 +142,12 @@ debug\_map 增加盲区预测点显示；双倍易伤自动触发（机会数大
 自动发送 \code{/radar/decision\_request}，小地图窗口按 \code{v} 键可手动触发）。
 工具链新增 Qt 控制面板 \code{rm\_control\_panel}（切换队伍、标定、录包）、
 录包工具 \code{databag\_tool}（按场次自动命名保存至 \code{bags/}）。
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figs/shadow_vis.png}
+  \caption{雷达安装位置（高度 3.9m）对应的红蓝双方盲区可视化，盲区预测即针对图中深色区域。}
+\end{figure}
 
 %======================================================
 \section{赛场应用效果}
