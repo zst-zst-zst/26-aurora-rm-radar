@@ -1,0 +1,14 @@
+{
+  "lidar_config": [
+    {
+      "broadcast_code": "1HDKD7M004G2J2",
+      "enable_connect": true,
+      "data_src": 1,
+      "publish_freq": 10.0,
+      "multi_topic": false,
+      "output_data_type": 0,
+      "xfer_format": 0,
+      "frame_id": "livox_frame"
+    }
+  ]
+}

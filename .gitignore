@@ -1,0 +1,39 @@
+build/
+log/
+install/
+.cache/
+.vscode/
+.2.
+.0.0
+.2.
+.0.0）
+.2.
+.0.0
+GenICam/
+
+config/merged_bag/*
+
+*.engine
+
+ros2bags/
+
+# local large assets (do not push to GitHub)
+*.step
+*.stl
+*.db3
+*.mcap
+bags/
+.venv/
+ALLUSERSPROFILE/
+
+# Heavy ML / map assets (kept locally only)
+model/
+*.onnx
+*.engine
+*.pcd
+*.pkl
+*.npz
+
+# Local-only docs / backups
+README.md.bak
+官方文件/

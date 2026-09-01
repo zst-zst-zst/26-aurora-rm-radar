@@ -1,0 +1,582 @@
+# LiDAR-Camera Overlap Report
+bag: /home/zst/T/bags/浙大1红
+camera_topic: /resolve_result
+lidar_topic: /kalman_detect
+time_window_ms: 120.0
+thresholds_m: 0.50, 0.80, 1.00
+
+## overall
+camera_points: 3903
+with_lidar_sample: 3446
+mean_dist_m: 3.089
+median_dist_m: 2.690
+p90_dist_m: 6.725
+p95_dist_m: 7.784
+max_dist_m: 11.780
+overlap_<=_0.50m: 525/3903 = 13.5%
+overlap_<=_0.80m: 696/3903 = 17.8%
+overlap_<=_1.00m: 800/3903 = 20.5%
+
+## blue[0] hero
+camera_points: 179
+with_lidar_sample: 160
+mean_dist_m: 1.437
+median_dist_m: 0.738
+p90_dist_m: 5.631
+p95_dist_m: 5.812
+max_dist_m: 6.207
+overlap_<=_0.50m: 69/179 = 38.5%
+overlap_<=_0.80m: 83/179 = 46.4%
+overlap_<=_1.00m: 103/179 = 57.5%
+
+## blue[1] engineer
+camera_points: 104
+with_lidar_sample: 93
+mean_dist_m: 2.977
+median_dist_m: 2.938
+p90_dist_m: 5.510
+p95_dist_m: 6.316
+max_dist_m: 8.909
+overlap_<=_0.50m: 5/104 = 4.8%
+overlap_<=_0.80m: 9/104 = 8.7%
+overlap_<=_1.00m: 12/104 = 11.5%
+
+## blue[2] infantry3
+camera_points: 325
+with_lidar_sample: 284
+mean_dist_m: 3.143
+median_dist_m: 3.023
+p90_dist_m: 7.431
+p95_dist_m: 8.043
+max_dist_m: 8.108
+overlap_<=_0.50m: 95/325 = 29.2%
+overlap_<=_0.80m: 104/325 = 32.0%
+overlap_<=_1.00m: 112/325 = 34.5%
+
+## blue[3] infantry4
+camera_points: 1000
+with_lidar_sample: 894
+mean_dist_m: 3.701
+median_dist_m: 3.697
+p90_dist_m: 7.193
+p95_dist_m: 8.599
+max_dist_m: 10.984
+overlap_<=_0.50m: 135/1000 = 13.5%
+overlap_<=_0.80m: 159/1000 = 15.9%
+overlap_<=_1.00m: 174/1000 = 17.4%
+
+## blue[4] sentry
+camera_points: 285
+with_lidar_sample: 248
+mean_dist_m: 2.540
+median_dist_m: 2.137
+p90_dist_m: 4.900
+p95_dist_m: 7.378
+max_dist_m: 9.539
+overlap_<=_0.50m: 21/285 = 7.4%
+overlap_<=_0.80m: 29/285 = 10.2%
+overlap_<=_1.00m: 32/285 = 11.2%
+
+## red[0] hero
+camera_points: 520
+with_lidar_sample: 456
+mean_dist_m: 3.705
+median_dist_m: 3.103
+p90_dist_m: 7.349
+p95_dist_m: 8.134
+max_dist_m: 11.780
+overlap_<=_0.50m: 17/520 = 3.3%
+overlap_<=_0.80m: 38/520 = 7.3%
+overlap_<=_1.00m: 54/520 = 10.4%
+
+## red[1] engineer
+camera_points: 204
+with_lidar_sample: 185
+mean_dist_m: 1.646
+median_dist_m: 0.494
+p90_dist_m: 6.149
+p95_dist_m: 7.910
+max_dist_m: 8.268
+overlap_<=_0.50m: 93/204 = 45.6%
+overlap_<=_0.80m: 106/204 = 52.0%
+overlap_<=_1.00m: 110/204 = 53.9%
+
+## red[2] infantry3
+camera_points: 701
+with_lidar_sample: 619
+mean_dist_m: 3.529
+median_dist_m: 3.183
+p90_dist_m: 7.215
+p95_dist_m: 7.762
+max_dist_m: 8.563
+overlap_<=_0.50m: 33/701 = 4.7%
+overlap_<=_0.80m: 57/701 = 8.1%
+overlap_<=_1.00m: 76/701 = 10.8%
+
+## red[3] infantry4
+camera_points: 585
+with_lidar_sample: 507
+mean_dist_m: 2.227
+median_dist_m: 1.939
+p90_dist_m: 4.374
+p95_dist_m: 4.828
+max_dist_m: 5.586
+overlap_<=_0.50m: 57/585 = 9.7%
+overlap_<=_0.80m: 111/585 = 19.0%
+overlap_<=_1.00m: 127/585 = 21.7%
+
+## time 0-10s
+camera_points: 130
+with_lidar_sample: 103
+mean_dist_m: 1.698
+median_dist_m: 1.650
+p90_dist_m: 3.210
+p95_dist_m: 3.522
+max_dist_m: 7.628
+overlap_<=_0.50m: 19/130 = 14.6%
+overlap_<=_0.80m: 31/130 = 23.8%
+overlap_<=_1.00m: 36/130 = 27.7%
+
+## time 10-20s
+camera_points: 132
+with_lidar_sample: 130
+mean_dist_m: 2.626
+median_dist_m: 2.306
+p90_dist_m: 5.053
+p95_dist_m: 6.578
+max_dist_m: 6.776
+overlap_<=_0.50m: 8/132 = 6.1%
+overlap_<=_0.80m: 13/132 = 9.8%
+overlap_<=_1.00m: 19/132 = 14.4%
+
+## time 20-30s
+camera_points: 98
+with_lidar_sample: 89
+mean_dist_m: 4.261
+median_dist_m: 4.928
+p90_dist_m: 6.604
+p95_dist_m: 6.626
+max_dist_m: 6.757
+overlap_<=_0.50m: 0/98 = 0.0%
+overlap_<=_0.80m: 0/98 = 0.0%
+overlap_<=_1.00m: 0/98 = 0.0%
+
+## time 30-40s
+camera_points: 88
+with_lidar_sample: 72
+mean_dist_m: 4.750
+median_dist_m: 5.072
+p90_dist_m: 7.455
+p95_dist_m: 7.584
+max_dist_m: 11.695
+overlap_<=_0.50m: 2/88 = 2.3%
+overlap_<=_0.80m: 5/88 = 5.7%
+overlap_<=_1.00m: 7/88 = 8.0%
+
+## time 40-50s
+camera_points: 98
+with_lidar_sample: 90
+mean_dist_m: 4.525
+median_dist_m: 4.386
+p90_dist_m: 7.873
+p95_dist_m: 11.337
+max_dist_m: 11.780
+overlap_<=_0.50m: 4/98 = 4.1%
+overlap_<=_0.80m: 6/98 = 6.1%
+overlap_<=_1.00m: 12/98 = 12.2%
+
+## time 50-60s
+camera_points: 69
+with_lidar_sample: 56
+mean_dist_m: 3.208
+median_dist_m: 2.696
+p90_dist_m: 7.113
+p95_dist_m: 7.423
+max_dist_m: 7.663
+overlap_<=_0.50m: 3/69 = 4.3%
+overlap_<=_0.80m: 8/69 = 11.6%
+overlap_<=_1.00m: 9/69 = 13.0%
+
+## time 60-70s
+camera_points: 146
+with_lidar_sample: 139
+mean_dist_m: 4.085
+median_dist_m: 2.846
+p90_dist_m: 7.748
+p95_dist_m: 8.068
+max_dist_m: 9.061
+overlap_<=_0.50m: 2/146 = 1.4%
+overlap_<=_0.80m: 8/146 = 5.5%
+overlap_<=_1.00m: 11/146 = 7.5%
+
+## time 70-80s
+camera_points: 88
+with_lidar_sample: 76
+mean_dist_m: 3.595
+median_dist_m: 2.832
+p90_dist_m: 7.267
+p95_dist_m: 7.792
+max_dist_m: 7.871
+overlap_<=_0.50m: 4/88 = 4.5%
+overlap_<=_0.80m: 7/88 = 8.0%
+overlap_<=_1.00m: 8/88 = 9.1%
+
+## time 80-90s
+camera_points: 84
+with_lidar_sample: 80
+mean_dist_m: 3.140
+median_dist_m: 2.545
+p90_dist_m: 7.863
+p95_dist_m: 7.956
+max_dist_m: 8.398
+overlap_<=_0.50m: 6/84 = 7.1%
+overlap_<=_0.80m: 7/84 = 8.3%
+overlap_<=_1.00m: 8/84 = 9.5%
+
+## time 90-100s
+camera_points: 117
+with_lidar_sample: 93
+mean_dist_m: 3.426
+median_dist_m: 3.068
+p90_dist_m: 8.222
+p95_dist_m: 8.302
+max_dist_m: 8.475
+overlap_<=_0.50m: 10/117 = 8.5%
+overlap_<=_0.80m: 15/117 = 12.8%
+overlap_<=_1.00m: 16/117 = 13.7%
+
+## time 100-110s
+camera_points: 60
+with_lidar_sample: 51
+mean_dist_m: 3.010
+median_dist_m: 2.751
+p90_dist_m: 5.815
+p95_dist_m: 6.626
+max_dist_m: 8.125
+overlap_<=_0.50m: 4/60 = 6.7%
+overlap_<=_0.80m: 7/60 = 11.7%
+overlap_<=_1.00m: 8/60 = 13.3%
+
+## time 110-120s
+camera_points: 137
+with_lidar_sample: 113
+mean_dist_m: 2.951
+median_dist_m: 2.104
+p90_dist_m: 7.151
+p95_dist_m: 7.294
+max_dist_m: 8.417
+overlap_<=_0.50m: 3/137 = 2.2%
+overlap_<=_0.80m: 5/137 = 3.6%
+overlap_<=_1.00m: 7/137 = 5.1%
+
+## time 120-130s
+camera_points: 128
+with_lidar_sample: 93
+mean_dist_m: 2.990
+median_dist_m: 2.963
+p90_dist_m: 5.435
+p95_dist_m: 7.230
+max_dist_m: 7.296
+overlap_<=_0.50m: 4/128 = 3.1%
+overlap_<=_0.80m: 14/128 = 10.9%
+overlap_<=_1.00m: 17/128 = 13.3%
+
+## time 130-140s
+camera_points: 110
+with_lidar_sample: 105
+mean_dist_m: 4.336
+median_dist_m: 4.485
+p90_dist_m: 5.963
+p95_dist_m: 7.399
+max_dist_m: 9.029
+overlap_<=_0.50m: 1/110 = 0.9%
+overlap_<=_0.80m: 1/110 = 0.9%
+overlap_<=_1.00m: 1/110 = 0.9%
+
+## time 140-150s
+camera_points: 188
+with_lidar_sample: 166
+mean_dist_m: 3.889
+median_dist_m: 3.559
+p90_dist_m: 7.863
+p95_dist_m: 8.041
+max_dist_m: 8.102
+overlap_<=_0.50m: 5/188 = 2.7%
+overlap_<=_0.80m: 11/188 = 5.9%
+overlap_<=_1.00m: 19/188 = 10.1%
+
+## time 150-160s
+camera_points: 154
+with_lidar_sample: 142
+mean_dist_m: 2.936
+median_dist_m: 1.879
+p90_dist_m: 7.931
+p95_dist_m: 8.052
+max_dist_m: 8.563
+overlap_<=_0.50m: 29/154 = 18.8%
+overlap_<=_0.80m: 43/154 = 27.9%
+overlap_<=_1.00m: 46/154 = 29.9%
+
+## time 160-170s
+camera_points: 109
+with_lidar_sample: 79
+mean_dist_m: 2.292
+median_dist_m: 1.520
+p90_dist_m: 5.497
+p95_dist_m: 5.924
+max_dist_m: 8.085
+overlap_<=_0.50m: 19/109 = 17.4%
+overlap_<=_0.80m: 29/109 = 26.6%
+overlap_<=_1.00m: 31/109 = 28.4%
+
+## time 170-180s
+camera_points: 136
+with_lidar_sample: 112
+mean_dist_m: 2.603
+median_dist_m: 1.487
+p90_dist_m: 5.983
+p95_dist_m: 6.324
+max_dist_m: 8.202
+overlap_<=_0.50m: 36/136 = 26.5%
+overlap_<=_0.80m: 40/136 = 29.4%
+overlap_<=_1.00m: 44/136 = 32.4%
+
+## time 180-190s
+camera_points: 158
+with_lidar_sample: 149
+mean_dist_m: 1.688
+median_dist_m: 1.123
+p90_dist_m: 4.573
+p95_dist_m: 5.219
+max_dist_m: 7.329
+overlap_<=_0.50m: 49/158 = 31.0%
+overlap_<=_0.80m: 63/158 = 39.9%
+overlap_<=_1.00m: 72/158 = 45.6%
+
+## time 190-200s
+camera_points: 49
+with_lidar_sample: 49
+mean_dist_m: 3.466
+median_dist_m: 2.509
+p90_dist_m: 7.887
+p95_dist_m: 8.107
+max_dist_m: 8.298
+overlap_<=_0.50m: 8/49 = 16.3%
+overlap_<=_0.80m: 10/49 = 20.4%
+overlap_<=_1.00m: 11/49 = 22.4%
+
+## time 200-210s
+camera_points: 69
+with_lidar_sample: 66
+mean_dist_m: 4.493
+median_dist_m: 3.333
+p90_dist_m: 8.061
+p95_dist_m: 8.148
+max_dist_m: 8.268
+overlap_<=_0.50m: 2/69 = 2.9%
+overlap_<=_0.80m: 3/69 = 4.3%
+overlap_<=_1.00m: 3/69 = 4.3%
+
+## time 210-220s
+camera_points: 97
+with_lidar_sample: 79
+mean_dist_m: 0.899
+median_dist_m: 0.794
+p90_dist_m: 1.711
+p95_dist_m: 1.928
+max_dist_m: 3.715
+overlap_<=_0.50m: 31/97 = 32.0%
+overlap_<=_0.80m: 40/97 = 41.2%
+overlap_<=_1.00m: 45/97 = 46.4%
+
+## time 220-230s
+camera_points: 68
+with_lidar_sample: 68
+mean_dist_m: 4.549
+median_dist_m: 3.846
+p90_dist_m: 9.483
+p95_dist_m: 10.440
+max_dist_m: 10.686
+overlap_<=_0.50m: 12/68 = 17.6%
+overlap_<=_0.80m: 12/68 = 17.6%
+overlap_<=_1.00m: 12/68 = 17.6%
+
+## time 230-240s
+camera_points: 98
+with_lidar_sample: 98
+mean_dist_m: 2.549
+median_dist_m: 2.878
+p90_dist_m: 4.924
+p95_dist_m: 5.064
+max_dist_m: 6.228
+overlap_<=_0.50m: 23/98 = 23.5%
+overlap_<=_0.80m: 27/98 = 27.6%
+overlap_<=_1.00m: 29/98 = 29.6%
+
+## time 240-250s
+camera_points: 101
+with_lidar_sample: 77
+mean_dist_m: 2.959
+median_dist_m: 2.878
+p90_dist_m: 6.029
+p95_dist_m: 6.193
+max_dist_m: 8.909
+overlap_<=_0.50m: 19/101 = 18.8%
+overlap_<=_0.80m: 19/101 = 18.8%
+overlap_<=_1.00m: 20/101 = 19.8%
+
+## time 250-260s
+camera_points: 146
+with_lidar_sample: 135
+mean_dist_m: 2.465
+median_dist_m: 2.432
+p90_dist_m: 4.415
+p95_dist_m: 4.614
+max_dist_m: 8.588
+overlap_<=_0.50m: 27/146 = 18.5%
+overlap_<=_0.80m: 33/146 = 22.6%
+overlap_<=_1.00m: 37/146 = 25.3%
+
+## time 260-270s
+camera_points: 93
+with_lidar_sample: 90
+mean_dist_m: 4.101
+median_dist_m: 3.783
+p90_dist_m: 7.562
+p95_dist_m: 8.522
+max_dist_m: 9.029
+overlap_<=_0.50m: 2/93 = 2.2%
+overlap_<=_0.80m: 3/93 = 3.2%
+overlap_<=_1.00m: 4/93 = 4.3%
+
+## time 270-280s
+camera_points: 114
+with_lidar_sample: 108
+mean_dist_m: 3.139
+median_dist_m: 3.585
+p90_dist_m: 5.755
+p95_dist_m: 6.837
+max_dist_m: 9.539
+overlap_<=_0.50m: 25/114 = 21.9%
+overlap_<=_0.80m: 27/114 = 23.7%
+overlap_<=_1.00m: 27/114 = 23.7%
+
+## time 280-290s
+camera_points: 84
+with_lidar_sample: 73
+mean_dist_m: 3.301
+median_dist_m: 1.981
+p90_dist_m: 10.297
+p95_dist_m: 10.613
+max_dist_m: 10.984
+overlap_<=_0.50m: 17/84 = 20.2%
+overlap_<=_0.80m: 17/84 = 20.2%
+overlap_<=_1.00m: 18/84 = 21.4%
+
+## time 290-300s
+camera_points: 55
+with_lidar_sample: 49
+mean_dist_m: 5.530
+median_dist_m: 5.364
+p90_dist_m: 9.517
+p95_dist_m: 10.341
+max_dist_m: 10.461
+overlap_<=_0.50m: 3/55 = 5.5%
+overlap_<=_0.80m: 11/55 = 20.0%
+overlap_<=_1.00m: 11/55 = 20.0%
+
+## time 300-310s
+camera_points: 83
+with_lidar_sample: 71
+mean_dist_m: 3.515
+median_dist_m: 4.266
+p90_dist_m: 5.284
+p95_dist_m: 5.702
+max_dist_m: 6.036
+overlap_<=_0.50m: 2/83 = 2.4%
+overlap_<=_0.80m: 2/83 = 2.4%
+overlap_<=_1.00m: 3/83 = 3.6%
+
+## time 310-320s
+camera_points: 48
+with_lidar_sample: 43
+mean_dist_m: 4.460
+median_dist_m: 4.280
+p90_dist_m: 5.842
+p95_dist_m: 5.861
+max_dist_m: 6.330
+overlap_<=_0.50m: 0/48 = 0.0%
+overlap_<=_0.80m: 0/48 = 0.0%
+overlap_<=_1.00m: 0/48 = 0.0%
+
+## time 320-330s
+camera_points: 89
+with_lidar_sample: 79
+mean_dist_m: 3.546
+median_dist_m: 3.591
+p90_dist_m: 7.137
+p95_dist_m: 7.198
+max_dist_m: 7.303
+overlap_<=_0.50m: 4/89 = 4.5%
+overlap_<=_0.80m: 9/89 = 10.1%
+overlap_<=_1.00m: 14/89 = 15.7%
+
+## time 330-340s
+camera_points: 122
+with_lidar_sample: 111
+mean_dist_m: 2.150
+median_dist_m: 2.137
+p90_dist_m: 5.203
+p95_dist_m: 5.943
+max_dist_m: 7.195
+overlap_<=_0.50m: 32/122 = 26.2%
+overlap_<=_0.80m: 38/122 = 31.1%
+overlap_<=_1.00m: 46/122 = 37.7%
+
+## time 340-350s
+camera_points: 73
+with_lidar_sample: 73
+mean_dist_m: 2.365
+median_dist_m: 2.030
+p90_dist_m: 5.540
+p95_dist_m: 6.941
+max_dist_m: 7.229
+overlap_<=_0.50m: 18/73 = 24.7%
+overlap_<=_0.80m: 21/73 = 28.8%
+overlap_<=_1.00m: 29/73 = 39.7%
+
+## time 350-360s
+camera_points: 175
+with_lidar_sample: 150
+mean_dist_m: 2.137
+median_dist_m: 1.652
+p90_dist_m: 4.412
+p95_dist_m: 4.751
+max_dist_m: 5.289
+overlap_<=_0.50m: 40/175 = 22.9%
+overlap_<=_0.80m: 52/175 = 29.7%
+overlap_<=_1.00m: 58/175 = 33.1%
+
+## time 360-370s
+camera_points: 86
+with_lidar_sample: 72
+mean_dist_m: 0.787
+median_dist_m: 0.241
+p90_dist_m: 2.348
+p95_dist_m: 3.228
+max_dist_m: 3.722
+overlap_<=_0.50m: 45/86 = 52.3%
+overlap_<=_0.80m: 50/86 = 58.1%
+overlap_<=_1.00m: 52/86 = 60.5%
+
+## time 370-380s
+camera_points: 23
+with_lidar_sample: 17
+mean_dist_m: 0.953
+median_dist_m: 0.617
+p90_dist_m: 2.274
+p95_dist_m: 2.374
+max_dist_m: 2.410
+overlap_<=_0.50m: 7/23 = 30.4%
+overlap_<=_0.80m: 9/23 = 39.1%
+overlap_<=_1.00m: 10/23 = 43.5%

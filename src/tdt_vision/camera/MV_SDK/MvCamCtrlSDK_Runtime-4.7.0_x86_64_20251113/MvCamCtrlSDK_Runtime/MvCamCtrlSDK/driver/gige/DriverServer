@@ -1,0 +1,73 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          DriverServer
+# Required-Start:    $remote_fs $syslog $local_fs
+# Required-Stop:     $remote_fs $syslog $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: driver self-starting
+# Description:       DriverServer is a daemon to self-starting driver server.
+### END INIT INFO
+
+SDK_HOME=${MVCAM_SDK_PATH}
+KERNEL_VERSION=$(uname -r)
+
+# Start the Driver Server
+start() 
+{
+        INSTALL_KERNEL_VERSION=$(cat $SDK_HOME/driver/kernel_version)
+        if [ "${KERNEL_VERSION}" != "${INSTALL_KERNEL_VERSION}" ]; then #内核版本不匹配，删除ko文件重新编译
+                #记录当前内核版本信息
+                echo "${KERNEL_VERSION}" > $SDK_HOME/driver/kernel_version
+                rm $SDK_HOME/driver/gige/*.ko -rf
+        fi
+
+	IMAGEFILTER_LOADED=`lsmod | grep -o gevfilter`
+        if [ "$IMAGEFILTER_LOADED" != "gevfilter" ]; then
+                if [ ! -f $SDK_HOME/driver/gige/gevfilter.ko ]; then
+                        if [ -f $SDK_HOME/driver/gige/build.sh ]; then
+                                $SDK_HOME/driver/gige/build.sh >/dev/null 2>&1
+                        fi
+                fi
+
+                chcon -t modules_object_t $SDK_HOME/driver/gige/*.ko >/dev/null 2>&1
+
+                if [ -f $SDK_HOME/driver/gige/load.sh ]; then
+                        $SDK_HOME/driver/gige/load.sh >/dev/null 2>&1
+                fi
+        fi
+	
+}
+
+# Stop the Driver Server
+Stop() 
+{
+        if [ -f $SDK_HOME/driver/gige/unload.sh ]; then
+                $SDK_HOME/driver/gige/unload.sh >/dev/null 2>&1
+        fi
+}
+
+restart() 
+{
+	stop
+	sleep 1
+	start	
+	return 0
+}
+
+# Main logic
+case "$1" in
+    start)
+        start
+    ;;
+    stop)
+	stop
+    ;;
+    restart)
+	restart
+        ;;
+  *)
+    echo $"Usage: $0 {start}"
+    exit 1
+esac
+exit 0

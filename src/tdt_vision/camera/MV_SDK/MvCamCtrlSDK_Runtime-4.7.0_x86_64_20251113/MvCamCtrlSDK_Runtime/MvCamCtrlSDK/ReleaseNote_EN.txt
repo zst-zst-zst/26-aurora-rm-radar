@@ -1,0 +1,35 @@
+﻿******************************************************
+Update Time：2019-11-26
+Version: 2.0.0
+******************************************************
+Updates and Optimizations
+1. 【Software】Supports multiple-camera operations and multi-window-division live view.
+2. 【Software】Added tools including Log View, Import/Export Features, and SystemInfo. 
+3. 【Software】Supports keyboard shortcuts settings and supports customizing keyboard shortcuts.
+4. 【Software】Supports setting cross line on live view window, which helps adjust position of target object displayed in images.
+5. 【Software】Supports GigE Vision action command settings, which can make cameras trigger a certain action nearly simultaneously.
+6. 【Software】Added tabs including Common Features, Trigger, and Image Processing on the Feature Tree panel.
+7. 【Software】Optimized UI and visual design.
+8. 【SDK】Added an Action Command related interface.
+9. 【SDK】Added an interface for determining whether the camera is connected or not.
+10.【SDK】Added an interface for clearing cache of GenICam node.
+11.【SDK】Add an interface for releasing image cache.
+12.【SDK】Added an interface for acquisition with high performance.
+13.【SDK】Optimized the interface for getting various types of information. 
+14.【SDK】Added an interface for getting network transmission information. 
+
+
+******************************************************
+Update Time：2023-04-13
+SDK Version: V4.1.0_1.2.0
+******************************************************
+Updates and Optimizations
+1.【SDK】Supports Linux64 acquisition card (CML, CXP, GEV) SDK
+2.【SDK】Supports U3V camera encapsulation. cti (MvProducerU3V. cti)
+3.【SDK】Supports GEV camera encapsulation. cti (MvProducerGEV. cti)
+4.【SDK】Linux64 system supports Cameralink devices
+5.【SDK】supports log services
+6.【SDK】Rendering library, image format conversion library update
+7.【SDK】Supports HB decoding
+8.【SDK】Unified cross platform synchronization of Windows version functionality
+9.【SDK】Solve some legacy defects in historical versions

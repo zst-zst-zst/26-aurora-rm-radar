@@ -1,0 +1,61 @@
+pre_match:
+  team: 0         # ⚠️ 【每场必改】0=红方, 1=蓝方
+  camera: night        # 【按需】day=日间曝光, night=夜间/室内曝光
+  self_frame: 0        # 不用改
+  lidar_enable: 1      # 【一般不动】0=关闭LiDAR链路(仅视觉)
+  serial_port: /dev/gimbal   # 【确认】串口设备路径, ls /dev/gimbal 验证
+  serial_baud: 115200  # 不用改
+  serial_enable: 1     # 【一般不动】0=关闭串口(调试用)
+  enable_map_debug: 0  # 比赛默认不随 match.launch 启 debug_map；需要看小地图时另开终端 ros2 launch debug_map map.launch.py
+  enable_auto_record: 1  # 比赛改回1! 现在调试关掉省性能
+  image_record_hz: 10.0  # 只限制/compressed_image录包频率；其它话题仍全频录
+  detect_max_process_fps: 30.0  # 实时识别限到30Hz，避免60FPS全链路打满CPU/GPU
+  record_dir: /home/zst/T/bags  # 不用改
+  record_prefix: match # 不用改
+  record_topics:       # 不用改
+    - /livox/lidar
+    - /compressed_image
+    - /match_info
+    - /resolve_result
+    - /radar2sentry
+    - /kalman_detect
+    - /radar/tx_raw
+    - /radar/rx_raw
+calibration:
+  camera_params: src/tdt_vision/camera/config/hik.yaml
+  calibrate_points_red: config/red/calibrate_points_red.yaml
+  calibrate_points_blue: config/blue/calibrate_points_blue.yaml
+  out_matrix_red: config/red/out_matrix_red.yaml
+  out_matrix_blue: config/blue/out_matrix_blue.yaml
+map:
+  map_yaml: config/map/map.yaml
+  map_image: config/map/map.jpg
+  map_points: config/map/map_points.yaml
+  # NOTE: map_pcd 路径已在 localization / dynamic_cloud 内部写死为 config/map/map.pcd
+  # NOTE: dynamic_cloud 使用 config/map/field_mesh.bin (1cm CAD 高度网格)
+  width: 28
+  height: 15
+bag:
+  team: 0               # ⚠️ 回放专用队伍: 0=红方, 1=蓝方 (不影响实时比赛)
+  rosbag_file: bags/match_20260522_195954
+  loop_playback: true
+  show_image: true
+  # 回放和实时共用 calibration.camera_params，也就是 HIK 6MPA 内参。
+  # bag 仍保留独立 out_matrix，方便回放重标外参时不覆盖比赛外参。
+  out_matrix_red:  config/red/bag_out_matrix_red.yaml
+  out_matrix_blue: config/blue/bag_out_matrix_blue.yaml
+  decode_compressed_image: true
+  publish_compressed_image: false
+  # —— 对齐比赛实时时序 ——
+  use_bag_timing: true       # 严格按 bag 录制时刻回放
+  replay_rate: 1.0           # 1:1 实时
+  max_sleep_ms: 30           # 视觉回放保流畅；0=严格等待但容易观感卡
+  camera_max_fps: 0.0        # 不限制相机推帧速率
+  wait_on_lidar_timing: false # 轻量视觉回放不等激光
+  legacy_mode: false         # 不要使用固定周期降级模式
+  legacy_cycle_ms: 100
+  enable_lidar_pipeline: false
+  enable_serial: false
+  serial_dry_run: false      # true=模拟发送(不需要真串口), false=真正写入串口
+  serial_use_resolve_fallback: true
+  publish_match_info: false

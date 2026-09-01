@@ -1,0 +1,18 @@
+vision_camera_node:
+  ros__parameters:
+    brand: hik              # 相机品牌, 不用改
+    frame_id: "camera"      # TF frame名, 不用改
+    image_topic: "camera_image"       # 原图topic, 不用改
+    compressed_topic: "compressed_image"  # 压缩图topic, 不用改
+    jpeg_quality: 85        # JPEG压缩质量(1-100), 不用改
+    publish_compressed: true  # 是否发布压缩图, 不用改
+    view_local: false       # true=本地弹窗预览(调试用), 比赛设false
+    # —— 海康夜间参数（比赛场馆偏暗，用这套） ——
+    hik.device_index: 0     # 0=自动选第一台海康工业相机(插上就用)
+    hik.width: 0            # 0=使用相机最大分辨率, 不用改
+    hik.height: 0           # 0=使用相机最大分辨率, 不用改
+    hik.fps: 60             # 【按需】帧率, 比赛60即可
+    hik.exposure_time: 15000  # 【按需】曝光时间(μs), 夜间/室内20000, 日间可降到5000-10000
+    hik.gain: 22.0          # 【按需】增益(dB), 夜间22, 日间可降到10-15
+    hik.gamma: 1.0          # CS060不支持SDK设Gamma, 设1.0跳过(消除warning)
+    hik.balance_white_auto: true  # 自动白平衡, 不用改

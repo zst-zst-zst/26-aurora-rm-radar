@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>rm_control_panel_cpp</name>
+  <version>1.0.0</version>
+  <description>RoboMaster radar control panel implemented in C++/Qt</description>
+
+  <maintainer email="user@example.com">zst</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>vision_interface</depend>
+
+  <build_depend>qtbase5-dev</build_depend>
+  <build_depend>yaml-cpp</build_depend>
+  <exec_depend>qtbase5-dev</exec_depend>
+  <exec_depend>yaml-cpp</exec_depend>
+
+  <exec_depend>ros2launch</exec_depend>
+  <exec_depend>image_view</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

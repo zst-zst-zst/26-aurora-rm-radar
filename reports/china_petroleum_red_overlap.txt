@@ -1,0 +1,105 @@
+# LiDAR-Camera Overlap Report
+bag: /home/zst/T/bags/中国石油大学红
+camera_topic: /resolve_result
+lidar_topic: /kalman_detect
+time_window_ms: 120.0
+thresholds_m: 0.50, 0.80, 1.00
+
+## overall
+camera_points: 77
+with_lidar_sample: 41
+mean_dist_m: 2.190
+median_dist_m: 0.323
+p90_dist_m: 3.472
+p95_dist_m: 14.923
+max_dist_m: 19.840
+overlap_<=_0.50m: 21/77 = 27.3%
+overlap_<=_0.80m: 21/77 = 27.3%
+overlap_<=_1.00m: 22/77 = 28.6%
+
+## blue[0] hero
+camera_points: 4
+with_lidar_sample: 0
+no matched lidar samples in time window
+
+## blue[2] infantry3
+camera_points: 2
+with_lidar_sample: 2
+mean_dist_m: 2.328
+median_dist_m: 2.328
+p90_dist_m: 2.728
+p95_dist_m: 2.778
+max_dist_m: 2.828
+overlap_<=_0.50m: 0/2 = 0.0%
+overlap_<=_0.80m: 0/2 = 0.0%
+overlap_<=_1.00m: 0/2 = 0.0%
+
+## blue[3] infantry4
+camera_points: 68
+with_lidar_sample: 39
+mean_dist_m: 2.183
+median_dist_m: 0.311
+p90_dist_m: 3.531
+p95_dist_m: 15.060
+max_dist_m: 19.840
+overlap_<=_0.50m: 21/68 = 30.9%
+overlap_<=_0.80m: 21/68 = 30.9%
+overlap_<=_1.00m: 22/68 = 32.4%
+
+## blue[4] sentry
+camera_points: 3
+with_lidar_sample: 0
+no matched lidar samples in time window
+
+## time 0-10s
+camera_points: 19
+with_lidar_sample: 0
+no matched lidar samples in time window
+
+## time 10-20s
+camera_points: 23
+with_lidar_sample: 6
+mean_dist_m: 8.587
+median_dist_m: 7.571
+p90_dist_m: 18.066
+p95_dist_m: 18.953
+max_dist_m: 19.840
+overlap_<=_0.50m: 3/23 = 13.0%
+overlap_<=_0.80m: 3/23 = 13.0%
+overlap_<=_1.00m: 3/23 = 13.0%
+
+## time 40-50s
+camera_points: 1
+with_lidar_sample: 1
+mean_dist_m: 1.438
+median_dist_m: 1.438
+p90_dist_m: 1.438
+p95_dist_m: 1.438
+max_dist_m: 1.438
+overlap_<=_0.50m: 0/1 = 0.0%
+overlap_<=_0.80m: 0/1 = 0.0%
+overlap_<=_1.00m: 0/1 = 0.0%
+
+## time 50-60s
+camera_points: 20
+with_lidar_sample: 20
+mean_dist_m: 1.695
+median_dist_m: 1.721
+p90_dist_m: 2.892
+p95_dist_m: 3.487
+max_dist_m: 3.765
+overlap_<=_0.50m: 4/20 = 20.0%
+overlap_<=_0.80m: 4/20 = 20.0%
+overlap_<=_1.00m: 5/20 = 25.0%
+
+## time 60-70s
+camera_points: 14
+with_lidar_sample: 14
+mean_dist_m: 0.209
+median_dist_m: 0.214
+p90_dist_m: 0.303
+p95_dist_m: 0.315
+max_dist_m: 0.323
+overlap_<=_0.50m: 14/14 = 100.0%
+overlap_<=_0.80m: 14/14 = 100.0%
+overlap_<=_1.00m: 14/14 = 100.0%

@@ -1,0 +1,27 @@
+%YAML:1.0
+---
+yolo_onnx: "model/ONNX/yolo.onnx"
+yolo_path: "model/TensorRT/yolo.engine"         # FP16: ~21ms
+armor_path: "model/TensorRT/armor_yolo.engine"
+classify_path: "model/TensorRT/classify.engine"
+yolo_conf: 0.60
+yolo_nms: 0.50
+armor_conf: 0.30
+armor_nms: 0.45
+# ---- 以下参数针对比赛 600W(6MP) 相机 (3072x2048) ----
+sr_enable: 0                    # 关闭SR以提升流畅度，6MP下优先依赖SAHI
+sr_engine: "model/SR/armor_espcn_x4.engine"
+sr_max_dim: 128
+sr_min_dim: 192                 # 远处数字优先：车框短边低于192时先放大再跑装甲板/数字识别
+# SAHI: 把 6MP 图(3072x2048)切成 1280x1280 瓦片，让 YOLO 看到远处小目标
+# scale=1.0 → 不额外放大，直接切 3072x2048 原图 → ~6 块瓦片 → 处理时间约 +80ms
+# scale=1.5 → 放大 1.5x 再切 → 目标更大但瓦片增多 → +150ms (如果 GPU 够用可开)
+sahi_enable: 0                  # 【卡顿保命】关闭SAHI切片，保留6MP全图YOLO+3D
+sahi_scale: 1.0                 # 1.0=切6MP原图(快,34ms)；1.5=放大再切(+50ms,16px→24px)
+sahi_overlap: 0.15
+sahi_merge_iou: 0.35             # 降低门槛: tile边界框IoU常<0.5, 0.55合并不掉导致多重框
+# 中间条带 SAHI: 只在 image y∈[y_band_top, y_band_bot] 的水平条带内切.
+# 上端=天花板, 下端=近场杂物, 都跳过. 远处装甲数字识别靠这个条带 + 全图 base YOLO 兜底.
+# y_band=[0, 1] 会恢复为整张图按 1280 tile 正常切片.
+sahi_y_band_top: 0.25       # 上 25% 不切
+sahi_y_band_bot: 0.75       # 下 25% 不切

@@ -1,0 +1,18 @@
+[Unit]
+Description=Set static IP 192.168.1.50/24 on eno1 for Livox LiDAR
+After=network.target
+Wants=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash -c '\
+    ip link set eno1 up && \
+    ip addr show eno1 | grep -q "192.168.1.50/24" || \
+    ip addr add 192.168.1.50/24 dev eno1'
+ExecStop=/bin/bash -c 'ip addr del 192.168.1.50/24 dev eno1 2>/dev/null || true'
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

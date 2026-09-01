@@ -1,0 +1,9 @@
+# Hikrobot MVS USB3 industrial camera udev rules
+# Install:
+#   sudo cp scripts/99-hik-camera.rules /etc/udev/rules.d/
+#   sudo udevadm control --reload-rules
+#   sudo udevadm trigger
+
+SUBSYSTEM=="usb", ATTR{idVendor}=="2bdf", MODE="0666"
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="2bdf", TEST=="power/control", ATTR{power/control}="on"
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="2bdf", TEST=="power/autosuspend", ATTR{power/autosuspend}="-1"

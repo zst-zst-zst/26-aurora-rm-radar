@@ -1,0 +1,19 @@
+%YAML:1.0
+---
+# 5-point solvePnP world points (meter, referee frame, red-origin)
+# Key order must remain: self_fortress, self_tower, enemy_base, enemy_tower, cross_tower
+#
+# Red-side points are derived as the 180-deg symmetric counterpart of blue-side points:
+#   x_red = 28.0 - x_blue
+#   y_red = 15.0 - y_blue
+#   z_red = z_blue
+#
+# This file is configured for "red as self".
+self_fortress: [7.93210, 7.53070, 0.00000]
+self_tower: [10.82200, 3.66430, 1.86840]
+enemy_base: [23.01710, 4.45300, 0.59980]
+enemy_tower: [24.54140, 11.08010, 0.73160]
+# cross_tower：self_tower 关于场地中心的对称点（敌方同款高塔顶角）。
+# (28-10.822, 15-3.6643, 1.8684) = (17.178, 11.3357, 1.8684)
+# 两个高点共同约束 pitch/roll，走到这一点要点高塔顶角，不是同柱低部。
+cross_tower: [17.17800, 11.33570, 1.86840]

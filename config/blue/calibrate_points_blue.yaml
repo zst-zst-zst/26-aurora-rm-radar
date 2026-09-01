@@ -1,0 +1,22 @@
+%YAML:1.0
+---
+# 5-point solvePnP world points (meter, referee frame, red-origin)
+# Key order must remain: self_fortress, self_tower, enemy_base, enemy_tower, cross_tower
+#
+# Blue-side points are the 180-deg symmetric counterpart of the red-side referee-frame points:
+#   x_blue = 28.0 - x_red
+#   y_blue = 15.0 - y_red
+#   z_blue = z_red
+#
+# Blue-side operation click order (from blue base side):
+#   1) blue base near corner
+#   2) blue outpost highest point
+#   3) red trapezoid buff
+#   4) red base left 90deg fence
+#   5) red outpost front lamp base corner
+self_fortress: [20.06790, 7.46930, 0.00020]
+self_tower: [17.17800, 11.33570, 1.86860]
+enemy_base: [4.98290, 10.54700, 0.60000]
+enemy_tower: [3.45860, 3.91990, 0.73180]
+# cross_tower：blue 的 self_tower 关于场地中心的对称点（红方同款高塔顶角）。
+cross_tower: [10.82200, 3.66430, 1.86840]
