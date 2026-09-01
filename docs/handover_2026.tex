@@ -3,6 +3,7 @@
 % 字体约定: 正文宋体(Noto Serif CJK SC), 标题黑体(Noto Sans CJK SC), 全文黑白
 \documentclass[11pt,a4paper,fontset=none]{ctexart}
 \usepackage[margin=2.4cm]{geometry}
+\usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{array}
@@ -134,6 +135,18 @@ debug\_map 增加盲区预测点显示；双倍易伤自动触发（机会数大
 \end{tabularx}
 \caption{区域赛回放包统计结果。整个赛季双倍易伤均未能触发。}
 \end{table}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\textwidth]{figs/vuln_stats.png}
+  \caption{各对局平均发送车辆数与发送 $\ge$3 辆时间占比（依据回放统计结果绘制）。}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{figs/vuln_calc.png}
+  \caption{部分场次局均易伤时长的计算手稿。}
+\end{figure}
 
 原因链条：\textbf{（1）}槽位填写时两车同号则后写覆盖先写，且无置信度仲裁；
 \textbf{（2）}车辆可见但未识别出装甲板数字时整帧不发送；
