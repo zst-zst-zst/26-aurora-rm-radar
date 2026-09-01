@@ -1,0 +1,280 @@
+% Aurora 战队 RoboMaster 雷达站 2026 赛季传承文档
+% 编译: xelatex handover_2026.tex (需 Noto Sans CJK SC 字体)
+\documentclass[11pt,a4paper]{ctexart}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue!60!black, urlcolor=blue!60!black}
+\setCJKmainfont{Noto Sans CJK SC}
+\setCJKsansfont{Noto Sans CJK SC}
+\setmonofont{DejaVu Sans Mono}[Scale=0.85]
+\captionsetup{font=small}
+\newcommand{\code}[1]{\texttt{#1}}
+\title{\textbf{Aurora 战队雷达站传承文档}\\[4pt]\large RoboMaster RMUC 2026 赛季 --- 架构、复盘与 2027 赛季指引}
+\author{2026 赛季雷达操作/代码负责人 留}
+\date{2026 年 9 月}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+本文档面向 2027 赛季接手雷达站的同学。内容涵盖：本项目与东北大学 T-DT 2025 开源代码的关系、
+系统架构与数据流、赛场操作流程（详见仓库内另外两份清单）、2026 区域赛表现的量化复盘
+（重点：为什么局均易伤只有约 475s、为什么双倍易伤一次都没开成）、已定位的代码级问题清单，
+以及 2027 赛季车型变化与装甲板变化的适配注意事项。
+\end{abstract}
+
+\tableofcontents
+
+%======================================================
+\section{项目沿革：从 T-DT 开源到 Aurora 2026}
+
+\subsection{两套代码的关系}
+\begin{itemize}
+  \item \textbf{上游参考}：\code{/home/zst/Downloads/T-DT\_Radar-main} --- 东北大学 T-DT 实验室
+        2025 赛季开源雷达（RMUC 2025）。其 README 明确：开源内容\textbf{不含串口、相机驱动、模型训练}。
+  \item \textbf{本项目}：\code{/home/zst/T}（已开源至
+        \url{https://github.com/zst-zst-zst/26-aurora-rm-radar}）---
+        在 T-DT 架构基础上为 RMUC 2026 深度改造的上场代码。
+\end{itemize}
+
+\subsection{相对 T-DT 原版的主要差异}
+\begin{itemize}
+  \item \textbf{自研裁判系统串口} \code{src/fusion/kalman\_filter/src/radar\_serial\_node.cpp}：
+        0x0305 小地图上传（$\le$5Hz）、0x0301/0x0121 双倍易伤决策包、0x0303 下行解析、
+        CRC8/CRC16 帧校验、赛场体检日志。这是 T-DT 原版没有的部分，也是本调试文档关注的重点。
+  \item \textbf{相机驱动}：T-DT 用海康通用驱动方案但未开源，本项目自带海康 SDK
+        （\code{src/tdt\_vision/camera/MV\_SDK}，4.7.0）与 \code{hik.cpp} 封装。
+  \item \textbf{RMUC 2026 适配}：5 槽位机器人模型（英雄/工程/步兵3/步兵4/哨兵，2026 无步兵5、无空中）、
+        场地 CAD（\code{CAD/}）、新地图点云、\code{config/guess\_pts.yaml} 盲区猜点、
+        \code{config/outputs/} 阴影区网格。
+  \item \textbf{增强功能}：CUDA ICP 配准（\code{localization/}）、HeightGrid 地形修正（resolve）、
+        HKUST 风格加权代价的卡尔曼融合跟踪（Hungarian 匹配 + id\_score 身份置信）、
+        行为分类猜点（CHARGING/ASSEMBLY/OUTPOST\_AMBUSH/TUNNEL）、
+        Qt 控制面板 \code{rm\_control\_panel}、自研录包工具 \code{databag\_tool}、
+        回放工具 \code{rosbag\_player}。
+  \item \textbf{损失}：T-DT 原版的 \code{dynamic\_cloud} 带 launch/头文件，本项目精简为仅源文件；
+        \code{vision\_interface} 的 msg 定义目录在仓库中不完整（仅存 include 头文件与编译产物），
+        \textbf{克隆仓库后若报缺 msg，需从 install/ 或上游 T-DT 仓库补齐}。
+\end{itemize}
+
+%======================================================
+\section{系统架构与数据流}
+
+完整链路图与逐项验证清单见仓库 \code{docs/preflight\_check.md}（赛前功能测试清单），此处给摘要：
+
+\begin{verbatim}
+相机(hik) ─→ Detect(YOLO+装甲板分类) ─→ Resolve(像素→世界坐标)
+                                              │ /resolve_result
+LiDAR(Mid-70) ─→ Localization(CUDA ICP) ─→ DynamicCloud ─→ Cluster ─→ KalmanFilter
+                                              │              融合跟踪
+                                              ▼
+                          kalman_filter: /radar2sentry (5槽坐标)
+                                              ▼
+                          radar_serial_node ── 串口 ──→ 裁判系统小地图
+                          收 0x0001/0003/0101/0105/020C/020E → /match_info
+\end{verbatim}
+
+关键点：
+\begin{itemize}
+  \item \textbf{5 槽位模型}：\code{robot\_slots.h} 定义 slot 0..4 = 英雄/工程/步兵3/步兵4/哨兵
+        （机器人号 1/2/3/4/7）。装甲板数字类别映射：1$\to$0, 2$\to$1, 3$\to$2, 4$\to$3, 6$\to$4。
+        \textbf{2026 赛季本就没有步兵5，槽位设计没有问题；但 2027 车型有变时必须改这里。}
+  \item \textbf{串口是"搬运工"}：\code{radar\_serial\_node} 把 \code{/radar2sentry}（主链）或
+        \code{/resolve\_result}（备用链，默认关）按 0x0305 协议打包成 6敌+6己方（48B）发送。
+        \textbf{能发几辆车完全由上游 detect/kalman 决定}。
+  \item \textbf{易伤状态}：0x020C = 各槽标记成功位；0x020E bit0-1 = 双倍易伤机会数(0$\sim$2)、
+        bit2 = 双倍易伤激活中。\code{debug\_map} 全自动触发：机会数 $>$ 已触发数 且 场上存在标记 且 非激活态
+        $\Rightarrow$ 发 \code{/radar/decision\_request}（手动兜底：小地图窗口按 \code{v} 键）。
+\end{itemize}
+
+%======================================================
+\section{赛场操作（摘要）}
+
+详细的接线、标定、比赛日 checklist、故障排查直接看仓库两份文档，务必赛前逐项过一遍：
+\begin{itemize}
+  \item \code{README\_DETAIL.md}：30 秒启动、接线表、\code{radar\_runtime.yaml}（\textbf{team 红蓝必改}）、
+        5 点 PnP 标定（每场之间雷达被搬动过必须重标）、比赛日时间线、回放/Foxglove 用法。
+  \item \code{docs/preflight\_check.md}：六个子系统的逐项验证清单，全部通过才允许上场。
+\end{itemize}
+
+血泪教训（2025/2026 两赛季累计）：
+\begin{itemize}
+  \item USB-TTL 接头\textbf{打热熔胶}；上层传感器\textbf{没有电源}，插线板必须提前穿线。
+  \item 排队候场时就把终端开好，命令准备成"插线回车就跑"；3 分钟准备时间非常紧。
+  \item \textbf{2026 区域赛有一局雷达未能正常启动}（教训见 \S4.3）——start 前必须跑 preflight 清单。
+\end{itemize}
+
+%======================================================
+\section{2026 区域赛复盘}
+
+\subsection{总体成绩}
+局均易伤约 \textbf{475 秒/局}，属于较差水平。红蓝方不同、场上车辆数不同，局均可得易伤上限也不同
+（后几局的局均计算见附图 \ref{fig:vuln}）。
+识别与定位本身在回放中跑得非常准（自评），\textbf{问题不出在感知，而出在"往裁判系统发什么"}。
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.72\textwidth]{/home/zst/T/image.png}
+  \caption{赛季后段局均易伤计算草稿（按红/蓝方与车辆数分别折算）}
+  \label{fig:vuln}
+\end{figure}
+
+\subsection{回放包量化复盘（2026-05 区域赛）}
+
+用 \code{tools/analyze\_vuln\_bag.py}（新增工具，用法见 \S6.2）对四个对局包解码
+\code{/radar2sentry} 与 \code{/match\_info}，得到：
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\textwidth}{lcccccc}
+\toprule
+对局包 & 我方 & 有效时长 & 平均发车数 & $\ge$3辆占比 & 标记成功(0x020C↑) & 双倍易伤激活 \\
+\midrule
+浙大1 & 红 & 372s & 2.26 & 29\% & \textbf{0 次} & \textbf{0 秒} \\
+浙大2 & 红 & 651s & 3.23 & 68\% & \textbf{0 次} & \textbf{0 秒} \\
+中国石油大学 & 红 & 75s & 1.20 & 0\% & \textbf{0 次} & \textbf{0 秒} \\
+东大(3072$\times$2048) & 蓝 & \multicolumn{5}{c}{mcap 文件损坏，无法解析} \\
+\bottomrule
+\end{tabularx}
+\caption{区域赛回放包统计。浙大1：1/2/3/4/5 辆帧占比 19/49/18/10/1\%；浙大2：5/24/24/32/12\%。}
+\end{table}
+
+\textbf{因果链}（这是本节最重要的结论）：
+\begin{enumerate}
+  \item 每帧只发出 1$\sim$3 辆敌车坐标（浙大1 平均 2.26 辆，99\% 的时间 $\le$3 辆）
+        --- 与操作时"小地图上最多同时 3 个点"的观察一致；
+  \item 发出的坐标精度不足（发得多但偏了会按规则扣标记分，见 \S5.2 规则）；
+  \item 结果：整场 \textbf{0x020C 标记成功位从未出现上升沿}（浙大2 即使平均 3.23 辆也一次没成）；
+  \item 雷达标记积分/机会拿不到 $\Rightarrow$ \textbf{0x020E 机会数恒为 0}；
+  \item 全自动双倍易伤的触发条件永远不满足 $\Rightarrow$ \textbf{整个区域赛双倍易伤激活 0 秒}。
+\end{enumerate}
+即：\textbf{局均 475s 易伤差，直接根因是"发车少 + 精度差"让标记机制空转，而不是双倍易伤按钮逻辑本身}。
+
+\subsection{两场未启动事故}
+区域赛中有一局（对应两个回放包）雷达完全没能启动，双倍易伤自然全程未开。归因：
+准备时间 3 分钟内接线/配置未完成，且没有强制性的赛前自检。对策已写入
+\code{docs/preflight\_check.md}，2027 赛季建议再加"一键自检脚本"（见 \S7）。
+
+\subsection{红蓝差异现象}
+红方局均易伤显著高于蓝方（见附图折算）。所有可解析的回放均为红方局，蓝方局包损坏无法对照，
+因此本轮只能作为经验假设：红方标定（\code{config/red/out\_matrix\_red.yaml}）质量优于蓝方，
+或雷达架设视角对蓝方视野更差。\textbf{2027 赛季训练时红蓝各标一次并各录一个回放包，用 \S6.2 脚本对照验证}。
+
+%======================================================
+\section{已定位的代码级问题（2027 修复清单）}
+
+\subsection{P1: detect 同槽位互相覆盖（"最多 3 辆"的直接原因之一）}
+\code{src/tdt\_vision/detect/src/detect.cpp} 构建平滑输出（约 L925-947）时按
+\code{smoothed.blue\_x[n] = ...} 直接写槽位，\textbf{两辆车若得到相同 number，后写的直接覆盖先写的}，
+没有任何置信度仲裁。装甲板数字分类偶发错误（两辆步兵都判成同一号）时，就凭空少一辆车。
+\textbf{修复建议}：写槽前查冲突，比较两车的装甲板置信度 / track 连续性（bot\_id），胜者占槽；
+或将 \code{DetectResult} 扩为 7 槽并按机器人号直填。
+
+\subsection{P2: 看得见车但没识别出装甲板 $\Rightarrow$ 整车不发}
+detect 中车辆 number 完全依赖装甲板数字分类（约 L766-800）：无装甲板或分类置信低时
+\code{number=-1}，随后填槽阶段 \code{if (n < 0) continue;} 直接丢弃该帧该车。
+车在画面里、坐标也能解算，但就是不上小地图。哨兵（类别 6）尤其如此。
+\textbf{修复建议}：number 未知的车借助 KF 轨迹关联（id\_score/bot\_id）回填槽位，
+而不是整帧丢弃；\textbf{更彻底的做法是把串口数据源从"detect 槽位"改为"KF 轨迹直出"}
+（KF 本来就有 color/number/位置/速度，detect 槽位只做辅助修正）。
+
+\subsection{P3: 标记精度规则必须进发送端门控}
+官方标记精度：$<$0.8m 计 +1，0.8$\sim$1.6m 计 +0.5，$\ge$1.6m 计 $-$0.8。
+\textbf{发错位置不但不得分还倒扣}。当前链路对"不确定的目标"照发不误。
+\textbf{修复建议}：给每个槽位加置信度门控（cam\_bias 大、单帧突跳、遮挡刚恢复时置 0 不发，
+0x0305 协议中 x=y=0 即视为未发送）。
+
+\subsection{P4: 双倍易伤自动触发链路依赖太长}
+触发条件 = 机会数增加 且 any\_marked 且 非激活（\code{debug\_map.cpp} 约 L644-663）。
+any\_marked 依赖 0x020C 上升沿，机会数依赖 0x020E，任何一环断了整场就废。
+\textbf{修复建议}：保留全自动，但放宽 any\_marked 为"本场比赛出现过任一标记"；
+并在 UI 上显式提示"机会数=1 未触发"的原因，避免赛中无感知。
+
+\subsection{P5: 录包健壮性}
+东大蓝包 mcap 结构损坏无法解析（本季唯一的蓝方对照数据丢失）。\code{databag\_tool}
+建议加分卷 + 落盘校验（fsync/尾部索引），重要对局录双份。
+
+%======================================================
+\section{回放包资产与复盘工具}
+
+\subsection{重点回放包（\code{bags/}）}
+\begin{itemize}
+  \item 带队名：\code{浙大1红}(2.1G)、\code{浙大2红}(4.1G)、\code{中国石油大学红}(1.3G)、
+        \code{东大}(4.0G)、\code{东大\_hik3072x2048蓝}(2.2G，已损坏)、\code{latest}(2.7G)
+  \item \code{match\_YYYYMMDD\_HHMMSS/}：按时间命名的整场录制（58 组，含 13G/12G 两个大包）
+\end{itemize}
+
+\subsection{复盘脚本 \code{tools/analyze\_vuln\_bag.py}}
+统计每帧发车数分布、标记成功上升沿、双倍易伤机会/激活时长：
+\begin{verbatim}
+python3 tools/analyze_vuln_bag.py bags/浙大1红
+# 依赖: pip3 install mcap mcap-ros2-support
+\end{verbatim}
+判读标准：\textbf{平均发车数应 $\ge$3.5、$\ge$3 辆占比 $\ge$80\%}，
+且每局至少出现 1$\sim$2 次 marks 上升沿；否则赛前不许上场。
+2027 赛季建议把它挂进 preflight：赛前用 dry\_run 录 5 分钟，跑脚本达标才进场。
+
+%======================================================
+\section{2027 赛季注意事项}
+
+\begin{enumerate}
+  \item \textbf{车型变化}：2027 赛季机器人数量减少一个。需按新赛季规则手册逐项核对并修改：
+        \code{robot\_slots.h} 槽位表、\code{radar\_serial\_node.cpp} 的
+        \code{kProtoPosToSlot}/\code{kSlotToProtoPos}、\code{armor\_class\_to\_slot} 映射、
+        0x0003 HP 表下标。改动后必须 dry\_run 全链路回归。
+  \item \textbf{重装/新型装甲板}：若 2027 重装单位或装甲板样式有变化，
+        现有 \code{classify.onnx}（数字分类）与 \code{armor\_yolo} 很可能不能直接用
+        --- 训练数据里没有新样式。需尽早收集新车装甲板照片重训；
+        同时注意 detect 里 YOLO 车辆类别过滤（\code{detect.cpp} 约 L552，类别 0/1 被丢弃），
+        新车型若被归入被丢弃的类别会整辆车消失。
+  \item \textbf{协议版本}：本季实现基于官方 V1.3.0（0x0305 48B/5Hz、0x0301+0x0121 决策、
+        0x020C bit4=空中跳过、0x020E bit0-1 机会 bit2 激活）。新赛季手册更新后逐条核对。
+  \item \textbf{优先修复顺序}：P1 同槽覆盖 $\to$ P2 KF 直出数据源 $\to$ P3 置信门控 $\to$ P4 触发链。
+        修完 P1+P2，配合现有定位精度（回放中已验证很准），发车数和标记成功率应有数量级改善。
+  \item \textbf{流程}：preflight 强制化 + 回放判据达标才上场（\S6.2），杜绝"雷达没开成"式事故。
+\end{enumerate}
+
+%======================================================
+\appendix
+\section{关键文件索引}
+\begin{longtable}{p{7.2cm}p{8.2cm}}
+\toprule
+文件 & 作用 \\
+\midrule
+\code{src/tdt\_vision/detect/src/detect.cpp} & YOLO 检测 + 装甲板分类 + 槽位输出（P1/P2 在此） \\
+\code{src/tdt\_vision/resolve/src/resolve.cpp} & 像素$\to$世界坐标、HeightGrid、雷达位置微调 \\
+\code{src/fusion/kalman\_filter/src/kalman\_filter.cpp} & 融合跟踪、\code{/radar2sentry} 发布（L1099 起） \\
+\code{src/fusion/kalman\_filter/src/radar\_serial\_node.cpp} & 裁判系统串口（0x0305/0x0301/0x0303） \\
+\code{src/fusion/debug\_map/debug\_map.cpp} & 本地小地图 + 双倍易伤自动触发（L644 起） \\
+\code{src/interface/vision\_interface/.../robot\_slots.h} & 5 槽位定义（2027 必改点） \\
+\code{config/radar\_runtime.yaml} & team 红蓝 / 串口 / 回放配置入口 \\
+\code{config/\{red,blue\}/out\_matrix\_*} & 5 点标定外参（每场重标） \\
+\code{tools/analyze\_vuln\_bag.py} & 回放易伤复盘统计（本季新增） \\
+\code{docs/preflight\_check.md} & 赛前六项验证清单 \\
+\bottomrule
+\end{longtable}
+
+\section{话题速查}
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+话题 & 类型 & 含义 \\
+\midrule
+\code{/radar2sentry} & Radar2Sentry & 串口主链输入（5 槽敌+己坐标） \\
+\code{/resolve\_result} & DetectResult & 纯相机解算（备用链，默认关） \\
+\code{/kalman\_detect} & DetectResult & KF 融合输出（调试/备用） \\
+\code{/match\_info} & MatchInfo & 比赛状态（self\_color/marks/ultimate/HP） \\
+\code{/radar/decision\_request} & UInt8 & 双倍易伤触发计数 \\
+\code{/radar/tx\_raw} & UInt8MultiArray & 串口发送帧回放（调试用） \\
+\bottomrule
+\end{tabularx}
+
+\end{document}
